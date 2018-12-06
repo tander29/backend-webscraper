@@ -20,6 +20,7 @@ def web_request(website):
 
 
 def phone_scrape(website):
+     """Given possible ph# looks for ph#'s"""
     s = '1?\W*([2-9][0-8][0-9])\W*([2-9][0-9]{2})\W*([0-9]{4})(\se?x?t?(\d*))?'
     phone_numbers = re.findall(
         s, website)
@@ -35,6 +36,7 @@ def phone_scrape(website):
 
 
 def url_scrape(website):
+    """Given possible url looks for url's"""
     # given options, looks for website
     # Divided regiex in half to meet the pep8 requirement
     first_half = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|'
@@ -52,6 +54,7 @@ def url_scrape(website):
 
 
 def email_scrape(website):
+    """ Given possible emails looks for emails """
     emails = re.findall(
         r'[\w\.-]+@[\w\.-]+', website)
     print
@@ -65,6 +68,7 @@ def email_scrape(website):
 
 
 def source_url(attrs):
+    """ helpfer function for MyParser """
     for name, value in attrs:
         if 'src' or 'href' in name:
             return value
@@ -73,7 +77,8 @@ def source_url(attrs):
 
 
 class MyParser(HTMLParser):
-
+    """ Limits the area's we look for emails,phone, and url
+    by going through the page stepwise """
     def __init__(self):
         HTMLParser.__init__(self)
         self.in_script = False
@@ -81,22 +86,26 @@ class MyParser(HTMLParser):
         self.data_in_tags = ''
 
     def handle_starttag(self, tag, attrs):
+        """Limits where website url's come from anddefines if in script """
         if tag == 'a' or tag == 'img':
             self.url_to_scrape += source_url(attrs) + ' '
         if tag == 'script':
             self.in_script = True
 
     def handle_endtag(self, tag):
+        """ determines exit if in script"""
         if tag == 'script':
             self.in_script = False
 
     def handle_data(self, data):
+        """Add data to search if not in script """
         if not self.in_script:
             if data:
                 self.data_in_tags += data + ' '
 
 
 def create_parser():
+    """ Arg parser """
     parser = argparse.ArgumentParser(description='Scrape a website')
     parser.add_argument(
         'url', help='Provide a website to scrape', nargs='+')
@@ -104,6 +113,7 @@ def create_parser():
 
 
 def main():
+    """ Main """
     parser = create_parser()
     args = parser.parse_args()
 
