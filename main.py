@@ -8,6 +8,7 @@ from HTMLParser import HTMLParser
 
 
 def web_request(website):
+    """This is a handler """
     print(website)
     r = requests.get(website)
 
